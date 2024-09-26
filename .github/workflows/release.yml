@@ -1,4 +1,4 @@
-name: Build release binaries
+name: Build release binaries and publish to Chocolatey
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   goreleaser:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,6 +23,19 @@ jobs:
         with:
           go-version: 1.19
 
+      - name: Install Chocolatey
+        run: |
+          Set-ExecutionPolicy Bypass -Scope Process -Force; `
+          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; `
+          iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+      - name: Add Chocolatey to PATH
+        run: |
+          $env:Path += ";C:\ProgramData\chocolatey\bin"
+
+      - name: Verify Chocolatey installation
+        run: choco --version
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
@@ -30,4 +43,4 @@ jobs:
           version: ${{ env.GITHUB_REF_NAME }}
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.PUBLISHER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
