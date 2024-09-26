@@ -55,10 +55,6 @@ chocolateys:
       {{ .ProjectName }} installer package.
       Software to print out your machine's current time.
     release_notes: "https://github.com/Nelwhix/currentTime/releases/tag/v{{ .Version }}"
-    dependencies:
-      - id: nfpm
-        version: 2.20.0
-
     # The api key that should be used to push to the chocolatey repository.
     #
     # WARNING: do not expose your api key in the configuration file!
